@@ -5,6 +5,7 @@ const Pagination = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true)
   const rowsPerPage = 10;
 
   // API call
@@ -19,7 +20,9 @@ const Pagination = () => {
         setTotalPages(Math.ceil(response.data.length / rowsPerPage))
       });
     } catch (e) {
-      console.log(e);
+      console.log("failed to fetch data:", e);
+    }finally{
+        setLoading(false)
     }
   }, [rowsPerPage]);
 
@@ -31,6 +34,7 @@ const Pagination = () => {
     const lastIdx = Math.min(firstIdx + rowsPerPage, data.length);
 
     return data.slice(firstIdx, lastIdx).map((row, idx) => (
+        <tbody>
       <tr className="h-10 border" key={idx}>
         <td align="left" className="pl-4">
           {row.id}
@@ -39,6 +43,7 @@ const Pagination = () => {
         <td align="left">{row.email}</td>
         <td align="left">{row.role}</td>
       </tr>
+      </tbody>
     ));
   };
 
@@ -51,6 +56,12 @@ const Pagination = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
+//  error handling
+  if (loading) {
+    return <p>Failed to fetch Data</p>; // You can replace this with a loading spinner or any other loading indicator
+  }else{
+
+//   table
   return (
     <div className="w-full">
       {/* Heading */}
@@ -63,6 +74,7 @@ const Pagination = () => {
       {/* Table */}
       <div className="w-full pr-8 pl-8">
         <table className="w-full ">
+            <thead>
           <tr className="h-10 bg-green-600 border">
             <th align="left" className="pl-4">
               ID
@@ -71,6 +83,7 @@ const Pagination = () => {
             <th align="left">Email</th>
             <th align="left">Role</th>
           </tr>
+          </thead>
           {paginatedRows()}
         </table>
 
@@ -97,7 +110,7 @@ const Pagination = () => {
         </div>
       </div>
     </div>
-  );
+  );}
 };
 
 export default Pagination;
